@@ -12,6 +12,13 @@ class Category extends StatelessWidget {
   final IconData iconLocation;
   final List<Unit> units;
 
+  /// Creates a [Category].
+  ///
+  /// A [Category] saves the name of the Category (e.g. 'Length'), its color for
+  /// the UI, and the icon that represents it (e.g. a ruler).
+  // While the @required checks for whether a named parameter is passed in,
+  // it doesn't check whether the object passed in is null. We check that
+  // in the assert statement.
   const Category({
     Key key,
     @required this.name,
@@ -25,29 +32,40 @@ class Category extends StatelessWidget {
         super(key: key);
 
   /// Navigates to the [ConverterRoute].
-  void _navigateToConverterRoutes(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          elevation: 1.0,
-          title: Text(
-            name,
-            style: Theme.of(context).textTheme.display1,
+  void _navigateToConverter(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<Null>(
+      builder: (BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 1.0,
+            title: Text(
+              name,
+              style: Theme.of(context).textTheme.display1,
+            ),
+            centerTitle: true,
+            backgroundColor: color,
           ),
-          centerTitle: true,
-          backgroundColor: color,
-        ),
-        body: ConverterRoute(
-          color: color,
-          name: name,
-          units: units,
-        ),
-      );
-    }));
+          body: ConverterRoute(
+            color: color,
+            name: name,
+            units: units,
+          ),
+          // This prevents the attempt to resize the screen when the keyboard
+          // is opened
+          resizeToAvoidBottomPadding: false,
+        );
+      },
+    ));
   }
 
+  /// Builds a custom widget that shows [Category] information.
+  ///
+  /// This information includes the icon, name, and color for the [Category].
   @override
+  // This `context` parameter describes the location of this widget in the
+  // widget tree. It can be used for obtaining Theme data from the nearest
+  // Theme ancestor in the tree. Below, we obtain the display1 text theme.
+  // See https://docs.flutter.io/flutter/material/Theme-class.html
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
@@ -55,16 +73,19 @@ class Category extends StatelessWidget {
         height: _rowHeight,
         child: InkWell(
           borderRadius: _borderRadius,
-          highlightColor: color,
-          splashColor: color,
-          onTap: () {
-            print("I was Tapped!");
-            _navigateToConverterRoutes(context);
-          },
+          highlightColor: color['highlight'],
+          splashColor: color['splash'],
+          // We can use either the () => function() or the () { function(); }
+          // syntax.
+          onTap: () => _navigateToConverter(context),
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              // There are two ways to denote a list: `[]` and `List()`.
+              // Prefer to use the literal syntax, i.e. `[]`, instead of `List()`.
+              // You can add the type argument if you'd like, i.e. <Widget>[].
+              // See https://www.dartlang.org/guides/language/effective-dart/usage#do-use-collection-literals-when-possible
               children: [
                 Padding(
                   padding: EdgeInsets.all(16.0),
@@ -79,7 +100,7 @@ class Category extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headline,
                   ),
-                )
+                ),
               ],
             ),
           ),
